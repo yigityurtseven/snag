@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="photoA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD27A"/>
+      <stop offset="1" stop-color="#FF8A5B"/>
+    </linearGradient>
+    <linearGradient id="photoB" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7B61FF"/>
+      <stop offset="0.6" stop-color="#C05BE0"/>
+      <stop offset="1" stop-color="#FF6FA1"/>
+    </linearGradient>
+    <clipPath id="clipA"><rect x="-150" y="-205" width="300" height="330" rx="26"/></clipPath>
+    <clipPath id="clipB"><rect x="-150" y="-205" width="300" height="330" rx="26"/></clipPath>
+  </defs>
+  <g transform="translate(445 500) rotate(-12)">
+    <rect x="-180" y="-235" width="360" height="470" rx="46" fill="#FFF8F2"/>
+    <g clip-path="url(#clipA)">
+      <rect x="-150" y="-205" width="300" height="330" fill="url(#photoA)"/>
+      <circle cx="60" cy="-90" r="52" fill="#FFF3D6"/>
+      <path d="M-160 140 L-160 40 C-90 -20 -30 0 30 50 C80 10 130 0 170 30 L170 140 Z" fill="#E2574C"/>
+    </g>
+  </g>
+  <g transform="translate(585 470) rotate(8)">
+    <rect x="-180" y="-235" width="360" height="470" rx="46" fill="#FFFFFF"/>
+    <g clip-path="url(#clipB)">
+      <rect x="-150" y="-205" width="300" height="330" fill="url(#photoB)"/>
+      <circle cx="-55" cy="-95" r="46" fill="#FFE2F0"/>
+      <path d="M-160 140 L-160 70 C-100 20 -40 40 20 80 C80 30 130 30 170 60 L170 140 Z" fill="#3B2A8C"/>
+    </g>
+    <rect x="-150" y="158" width="170" height="22" rx="11" fill="#E9E3F5"/>
+  </g>
+</svg>
