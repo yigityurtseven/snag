@@ -2,7 +2,7 @@
 
 Save photos and videos from **Instagram, TikTok and X** to your iPhone or Mac.
 Share a post to Snag from the share sheet and it lands in your library, ready
-to keep in the app or save to Photos.
+to keep in the app or save to Photos, or have it go straight to Photos.
 
 Snag is a native SwiftUI front end for [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 and [gallery-dl](https://github.com/mikf/gallery-dl). Everything runs on your
@@ -123,6 +123,7 @@ The install page is at [yigithanyurtseven.com/snag/install](https://yigithanyurt
 ## Roadmap
 
 - [x] Library, background downloads, Save to Photos
+- [x] Save to Photos automatically, and remove posts from Snag once they're saved
 - [x] iOS share extension
 - [x] macOS engine (subprocess)
 - [x] iOS engine: embedded CPython
