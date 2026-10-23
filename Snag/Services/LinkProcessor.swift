@@ -30,8 +30,10 @@ final class LinkProcessor {
             }
         } onComplete: { [store, activities] itemID, fileID, filename, error in
             Task { @MainActor in
+                let wasDone = store.item(itemID)?.status == .done
                 store.finishFile(item: itemID, file: fileID, filename: filename, error: error)
                 if let item = store.item(itemID) { activities.update(item) }
+                if !wasDone { LinkProcessor.current?.saveAutomatically(itemID) }
             }
         }
         // Before any session reports a file, so the posts they belong to are known.
@@ -97,6 +99,24 @@ final class LinkProcessor {
             DownloadNotifications.post(for: item)
         }
         #endif
+        saveAutomatically(item.id)
+    }
+
+    /// With auto-save on, a post goes to Photos as soon as all of it has
+    /// downloaded, and leaves Snag too if the user asked for that.
+    private func saveAutomatically(_ id: MediaItem.ID) {
+        guard PhotoLibrary.savesAutomatically, let item = store.item(id), item.status == .done else { return }
+        // iOS may have woken the app just for these downloads.
+        let finishBackgroundWork = beginBackgroundWork()
+        Task {
+            defer { finishBackgroundWork() }
+            do {
+                try await PhotoLibrary.save(item.downloadedFiles)
+                if PhotoLibrary.removesAfterSaving { store.delete(id) }
+            } catch {
+                print("Snag: failed to save to Photos: \(error)")
+            }
+        }
     }
 
     /// Asked once, after the first post, rather than on first launch.

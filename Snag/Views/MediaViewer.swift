@@ -44,6 +44,10 @@ struct MediaViewer: View {
             LoginSheet(site: site) { processor.retry(itemID) }
         }
         .onGeometryChange(for: EdgeInsets.self) { $0.safeAreaInsets } action: { safeArea = $0 }
+        // Saving can remove the post from Snag; nothing's left to show.
+        .onChange(of: store.item(itemID) == nil) { _, isGone in
+            if isGone { dismiss() }
+        }
         // Panning a zoomed photo downward shouldn't close the viewer.
         .interactiveDismissDisabled(isZoomed)
         .environment(\.colorScheme, .dark)

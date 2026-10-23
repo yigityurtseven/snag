@@ -11,15 +11,22 @@ struct ItemActions {
     let processor: LinkProcessor
     let toasts: Toasts
 
+    /// Saves the whole post, then removes it from Snag if the user asked for that.
     func saveToPhotos(_ item: MediaItem) async {
-        await saveToPhotos(item.downloadedFiles)
+        await saveToPhotos(item.downloadedFiles, removing: item)
     }
 
     /// Saves some of a post's files, e.g. just the carousel page on screen.
-    func saveToPhotos(_ files: [MediaFile]) async {
+    /// Only a whole post (`removing`) is ever removed afterwards.
+    func saveToPhotos(_ files: [MediaFile], removing item: MediaItem? = nil) async {
         do {
             try await PhotoLibrary.save(files)
-            toasts.show(files.count > 1 ? "Saved \(files.count) items to Photos" : "Saved to Photos")
+            if let item, PhotoLibrary.removesAfterSaving {
+                delete(item)
+                toasts.show(files.count > 1 ? "Moved \(files.count) items to Photos" : "Moved to Photos")
+            } else {
+                toasts.show(files.count > 1 ? "Saved \(files.count) items to Photos" : "Saved to Photos")
+            }
         } catch {
             toasts.show(error.localizedDescription, systemImage: "exclamationmark.triangle.fill")
         }

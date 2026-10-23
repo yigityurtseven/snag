@@ -47,6 +47,7 @@ struct SnagApp: App {
 }
 
 #if os(iOS)
+import AVFoundation
 import UserNotifications
 
 final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -55,6 +56,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        // Videos are the point of the app: play their sound even when the
+        // ring/silent switch is on silent.
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         return true
     }
 

@@ -10,10 +10,22 @@ enum PhotoLibrary {
         }
     }
 
-    /// Adds files to Photos. Only asks for add-only access, never reads the library.
-    static func save(_ files: [MediaFile]) async throws {
+    /// Settings keys. Both are off until the user turns them on.
+    static let autoSaveKey = "autoSaveToPhotos"
+    static let removeAfterSavingKey = "removeAfterSaving"
+
+    static var savesAutomatically: Bool { UserDefaults.standard.bool(forKey: autoSaveKey) }
+    static var removesAfterSaving: Bool { UserDefaults.standard.bool(forKey: removeAfterSavingKey) }
+
+    /// Only asks for add-only access, never reads the library.
+    static func requestAccess() async -> Bool {
         let status = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
-        guard status == .authorized || status == .limited else { throw SaveError.notAuthorized }
+        return status == .authorized || status == .limited
+    }
+
+    /// Adds files to Photos.
+    static func save(_ files: [MediaFile]) async throws {
+        guard await requestAccess() else { throw SaveError.notAuthorized }
 
         try await PHPhotoLibrary.shared().performChanges {
             for file in files {

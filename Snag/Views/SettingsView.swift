@@ -15,12 +15,16 @@ struct SettingsView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var notificationStatus: UNAuthorizationStatus?
     @State private var mediaSize: Int64?
+    @AppStorage(PhotoLibrary.autoSaveKey) private var savesAutomatically = false
+    @AppStorage(PhotoLibrary.removeAfterSavingKey) private var removesAfterSaving = false
+    @State private var isShowingPhotosDenied = false
 
     var body: some View {
         NavigationStack {
             Form {
                 help
                 accountsSection
+                saving
                 notifications
                 storage
                 privacy
@@ -72,6 +76,37 @@ struct SettingsView: View {
             .fullScreenCover(isPresented: $isShowingWelcome) {
                 WelcomeView { isShowingWelcome = false }
             }
+        }
+    }
+
+    private var saving: some View {
+        Section {
+            Toggle(isOn: $savesAutomatically) {
+                Label("Save to Photos Automatically", systemImage: "photo.badge.arrow.down")
+            }
+            Toggle(isOn: $removesAfterSaving) {
+                Label("Remove After Saving", systemImage: "trash")
+            }
+        } header: {
+            Text("Saving")
+        } footer: {
+            Text("Automatic saving puts each post in your photo library as soon as it finishes downloading. Remove After Saving deletes Snag's copy once a whole post is in Photos, so it doesn't take up space twice.")
+        }
+        // Ask now, while the user is here, rather than during a background download.
+        .onChange(of: savesAutomatically) { _, isOn in
+            guard isOn else { return }
+            Task {
+                if await !PhotoLibrary.requestAccess() {
+                    savesAutomatically = false
+                    isShowingPhotosDenied = true
+                }
+            }
+        }
+        .alert("Snag Can't Add to Photos", isPresented: $isShowingPhotosDenied) {
+            Button("Open Settings") { openURL(URL(string: UIApplication.openSettingsURLString)!) }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(PhotoLibrary.SaveError.notAuthorized.localizedDescription)
         }
     }
 
